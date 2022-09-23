@@ -25,11 +25,12 @@
 
 <script>
 
-async function initialize() {
+let WWWeb3_contract = "0x8a6df0ff9E9f256BbA19cA8a1EE427AafCb8830e";
+async function initialize(ca) {
                     
     if (typeof window.ethereum !== 'undefined') {
-        let WWWeb3_contract = "0x8a6df0ff9E9f256BbA19cA8a1EE427AafCb8830e";
         let account;
+        let ca_address = ca;
         web3 = new Web3(window.ethereum)
         try {
           // Request account access if needed
@@ -94,7 +95,7 @@ async function initialize() {
             "stateMutability": "view",
             "type": "function"
         }
-        ], WWWeb3_Contract);
+        ], ca_address);
         console.log(Contract.transactionConfirmationBlocks)
         console.log(Contract.methods)
         console.log(Contract.options.address)
@@ -142,6 +143,7 @@ async function initialize() {
     // add more contract interactions below
     }
 }
-initialize();
+console.log(WWWeb3_contract)
+initialize(WWWeb3_contract);
 </script>
 </body>
