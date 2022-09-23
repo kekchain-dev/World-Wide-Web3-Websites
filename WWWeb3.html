@@ -28,6 +28,7 @@
 async function initialize() {
                     
     if (typeof window.ethereum !== 'undefined') {
+        let WWWeb3_contract = "0x8a6df0ff9E9f256BbA19cA8a1EE427AafCb8830e";
         let account;
         web3 = new Web3(window.ethereum)
         try {
@@ -93,7 +94,7 @@ async function initialize() {
             "stateMutability": "view",
             "type": "function"
         }
-        ],"0x8a6df0ff9E9f256BbA19cA8a1EE427AafCb8830e");
+        ], WWWeb3_Contract);
         console.log(Contract.transactionConfirmationBlocks)
         console.log(Contract.methods)
         console.log(Contract.options.address)
