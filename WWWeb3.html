@@ -1,0 +1,146 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>(BBB) Blockchain Blog Boilerplate: Window.Ethereum | Web3.js | Jquery + Kekchain</title>
+
+    <!-- <link rel="stylesheet" type="text/css" href="main.css"> -->
+</head>
+<body>
+<div class="container">
+    <center>
+    <label for="name" class="col-lg-2 control-label">Name:</label>
+    <input id="name" type="text">
+
+    <button id="button">Click!</button>
+
+    <h1 id="word"></h1>
+
+    </center>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+
+<script>
+
+async function initialize() {
+                    
+    if (typeof window.ethereum !== 'undefined') {
+        let account;
+        web3 = new Web3(window.ethereum)
+        try {
+          // Request account access if needed
+          // await window.ethereum.enable()
+          // Acccounts now exposed
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          account = accounts[0];
+          console.log(account)
+        } catch (error) {
+          // User denied account access...
+        }
+        // await window.ethereum.enable();
+
+        window.ethereum.on('accountsChanged', function (accounts) {
+          // Time to reload your interface with accounts[0]!
+          console.log(accounts[0])
+         });
+
+        var Contract = await new window.web3.eth.Contract([
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "newWord",
+                    "type": "string"
+                }
+            ],
+            "name": "setWord",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "string"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "name": "Word",
+                    "type": "string"
+                }
+            ],
+            "name": "Word",
+            "type": "event"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "getWord",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "string"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        }
+        ],"0x8a6df0ff9E9f256BbA19cA8a1EE427AafCb8830e");
+        console.log(Contract.transactionConfirmationBlocks)
+        console.log(Contract.methods)
+        console.log(Contract.options.address)
+        await Contract.methods.getWord()
+        .call(function(error, result){
+            if(!error)
+            {
+                console.log("Word :"+$("#name").val());
+                $("#word").html('Hello ' + result);
+            } else 
+                console.log(error);
+        });
+                
+        $("#button").click(function() {
+
+        Contract.methods.setWord($("#name").val()).send({from: account.toString()})
+        .on('transactionHash', function(hash){
+            console.log(hash);
+        })
+        .on('confirmation', function(confirmationNumber, receipt){
+            console.log(confirmationNumber);
+        })
+        .on('receipt', function(receipt){
+            // receipt example
+            console.log(receipt);
+            async function updateText() {
+                await Contract.methods.getWord()
+                .call(function(error, result){
+                    if(!error)
+                    {
+                        // console.log(result);
+                        console.log("Word :"+$("#name").val());
+                        $("#word").html('Hello ' + result);
+                    } else 
+                        console.log(error);
+                });
+            }
+            updateText();
+        })
+        .on('error', function(error, receipt) { 
+            // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
+            console.log(error);
+        });
+    });
+    // add more contract interactions below
+    }
+}
+initialize();
+</script>
+</body>
